@@ -1,0 +1,14 @@
+[package]
+name = "esp_s2"
+version = "0.1.0"
+authors = ["Eloy Coto <eloy.coto@acalustra.com>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+hal = { package = "esp32s2-hal", version = "0.7.0" }
+esp-hal-smartled = { package = "esp-hal-smartled", version = "0.7.0" }
+esp-backtrace = { version = "0.5.0", features = ["esp32s2", "panic-handler", "print-uart"] }
+esp-println       = { version = "0.3.1", features = ["esp32s2"] }
+smart-leds        = "0.3.0"
+
