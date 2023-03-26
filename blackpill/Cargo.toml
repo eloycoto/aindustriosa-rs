@@ -11,6 +11,7 @@ cortex-m-rt = "0.7.2"
 cortex-m-semihosting = "0.3.3"
 panic-halt = "0.2.0"
 embedded-hal = "0.2.7"
+embedded-storage = "0.2.0"
 
 # Uncomment for the panic example.
 # panic-itm = "0.4.1"
