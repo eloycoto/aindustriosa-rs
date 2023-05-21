@@ -1,7 +1,9 @@
 #![no_std]
 #![no_main]
 
-use bme280::BME280;
+use bme280::i2c::BME280;
+use core::cell::RefCell;
+use embedded_hal_bus::i2c::RefCellDevice;
 use esp_backtrace as _;
 use esp_println::println;
 use hal::{
@@ -17,9 +19,17 @@ fn main() -> ! {
 
     // Disable the RTC and TIMG watchdog timers
     let mut rtc = Rtc::new(peripherals.RTC_CNTL);
-    let timer_group0 = TimerGroup::new(peripherals.TIMG0, &clocks);
+    let timer_group0 = TimerGroup::new(
+        peripherals.TIMG0,
+        &clocks,
+        &mut system.peripheral_clock_control,
+    );
     let mut wdt0 = timer_group0.wdt;
-    let timer_group1 = TimerGroup::new(peripherals.TIMG1, &clocks);
+    let timer_group1 = TimerGroup::new(
+        peripherals.TIMG1,
+        &clocks,
+        &mut system.peripheral_clock_control,
+    );
     let mut wdt1 = timer_group1.wdt;
 
     rtc.rwdt.disable();
@@ -36,15 +46,12 @@ fn main() -> ! {
         &mut system.peripheral_clock_control,
         &clocks,
     );
-
-    let mut bme280 = BME280::new_primary(i2c, Delay::new(&clocks));
-    match bme280.init() {
-        Err(e) => println!("ERROR {:?}", e),
-        Ok(()) => println!("BME OK"),
-    }
+    let i2c_ref = RefCell::new(i2c);
+    let i2c_bus = RefCellDevice::new(&i2c_ref);
+    let mut bme280 = BME280::new_primary(i2c_bus);
 
     loop {
-        match bme280.measure() {
+        match bme280.measure(&mut Delay::new(&clocks)) {
             Err(e) => println!("ERROR READING {:?}", e),
             Ok(m) => {
                 println!("Relative Humidity = {}%", m.humidity);
