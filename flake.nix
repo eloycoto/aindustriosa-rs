@@ -16,7 +16,13 @@
         with pkgs;
         {
           devShells.default = mkShell {
-            buildInputs = [ rust-bin.stable.latest.default ];
+            buildInputs = [
+              (rust-bin.stable.latest.default.override {
+                extensions = [ "rust-src" ];
+                targets = [ "thumbv7m-none-eabi" ];
+              })
+              pkgs.openocd
+            ];
           };
         }
       );
