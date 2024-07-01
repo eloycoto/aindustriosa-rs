@@ -16,12 +16,14 @@
         with pkgs;
         {
           devShells.default = mkShell {
-            buildInputs = [
+            buildInputs = with pkgs; [
               (rust-bin.stable.latest.default.override {
                 extensions = [ "rust-src" ];
                 targets = [ "thumbv7m-none-eabi" ];
               })
-              pkgs.openocd
+            ] ++  [
+              openocd
+              rust-analyzer
             ];
           };
         }
